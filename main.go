@@ -6,6 +6,8 @@ import (
 	"strconv"
 )
 
+const proId = "PM20211228161652"
+
 func main() {
 	cardRecordFile := "/Users/yuzekai/Desktop/card.xlsx"
 	paymentFile := "/Users/yuzekai/Desktop/payment.xlsx"
@@ -32,8 +34,14 @@ func calculateProjectPrice(emWorkTimeMap map[string]float64,
 		bonds := 0.0
 		insurance := 0.0
 		salary := 0.0
+		if projectId == proId {
+			for _, record := range recordList {
+				record.Print()
+			}
+		}
 		//fmt.Println("calculateProjectPrice: projectId: ", projectId, "   ", len(recordList))
 		for _, record := range recordList {
+
 			// 基本数据
 			pData.pmId = record.pmId
 			pData.projectId = record.projectId
@@ -45,6 +53,9 @@ func calculateProjectPrice(emWorkTimeMap map[string]float64,
 			totalWorkTime := emWorkTimeMap[emId]
 			// 每个员工在这个项目中的工时比例
 			rate := workTime / totalWorkTime
+			//if projectId == proId {
+			//	fmt.Println(emId, "  ", totalWorkTime, "   ", rate)
+			//}
 			//fmt.Println("recordList: ", emId)
 			if emPaymentMap[emId] == nil {
 				continue
@@ -66,6 +77,8 @@ func calculateProjectPrice(emWorkTimeMap map[string]float64,
 	return projectData
 }
 
+/**
+ */
 func getEmployeeRecord(filepath string) (map[string]float64, map[string][]*Record) {
 	f, err := excelize.OpenFile(filepath)
 	if err != err {
@@ -145,6 +158,6 @@ func getEmployeePayment(filepath string) map[string]*Payment {
 		payment.salary = row[55]
 		eIdPaymentMap[payment.employeeId] = payment
 	}
-	fmt.Println("getEmployeePayment", len(eIdPaymentMap))
+	//fmt.Println("getEmployeePayment", len(eIdPaymentMap))
 	return eIdPaymentMap
 }
