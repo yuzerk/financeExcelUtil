@@ -9,10 +9,14 @@ import (
 const proId = "PM20211228161652"
 
 func main() {
-	cardRecordFile := "/Users/yuzekai/Desktop/card.xlsx"
+	cardRecordFile := "/Users/yuzekai/Desktop/card2.xlsx"
 	paymentFile := "/Users/yuzekai/Desktop/payment.xlsx"
 
-	emWorkTimeMap, projectIdRecordList := getEmployeeRecord(cardRecordFile)
+	// 一维表
+	//emWorkTimeMap, projectIdRecordList := getEmployeeRecord(cardRecordFile)
+
+	// 二维表
+	emWorkTimeMap, projectIdRecordList := getEmployeeRecordForTwoDimension(cardRecordFile)
 
 	emPaymentMap := getEmployeePayment(paymentFile)
 
@@ -54,7 +58,7 @@ func calculateProjectPrice(emWorkTimeMap map[string]float64,
 			// 每个员工在这个项目中的工时比例
 			rate := workTime / totalWorkTime
 			//if projectId == proId {
-			//	fmt.Println(emId, "  ", totalWorkTime, "   ", rate)
+			//	fmt.Println(projectId, "每个员工在这个项目中的工时比例   ", emId, "  ", totalWorkTime, "   ", rate)
 			//}
 			//fmt.Println("recordList: ", emId)
 			if emPaymentMap[emId] == nil {
@@ -77,8 +81,10 @@ func calculateProjectPrice(emWorkTimeMap map[string]float64,
 	return projectData
 }
 
-/**
- */
+/*
+*
+for 一维打卡表
+*/
 func getEmployeeRecord(filepath string) (map[string]float64, map[string][]*Record) {
 	f, err := excelize.OpenFile(filepath)
 	if err != err {
@@ -124,6 +130,74 @@ func getEmployeeRecord(filepath string) (map[string]float64, map[string][]*Recor
 		childList := projectIdRecordList[record.projectId]
 		childList = append(childList, record)
 		projectIdRecordList[record.projectId] = childList
+	}
+	fmt.Println("getEmployeeRecord", len(emWorkTimeMap), len(projectIdRecordList))
+	return emWorkTimeMap, projectIdRecordList
+}
+
+/*
+*
+for 二维打卡表
+*/
+func getEmployeeRecordForTwoDimension(filepath string) (map[string]float64, map[string][]*Record) {
+	f, err := excelize.OpenFile(filepath)
+	if err != err {
+		fmt.Println(err)
+	}
+	defer func() {
+		if err := f.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+	sheetName := f.GetSheetName(0)
+	rows, err := f.GetRows(sheetName)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// 工号map 总工时
+	emWorkTimeMap := make(map[string]float64)
+	// 项目号map recordList
+	projectIdRecordList := make(map[string][]*Record)
+	for index, row := range rows {
+		if index == 0 {
+			continue
+		}
+		for colIndex, col := range row {
+			if len(col) == 0 {
+				continue
+			}
+			if colIndex <= 2 {
+				continue
+			}
+			record := new(Record)
+			record.pmId = row[0]
+			record.projectId = row[1]
+			record.projectName = row[2]
+			colNameString, err := ConvertNumToChar(colIndex + 1)
+			if err != nil {
+				fmt.Println("ConvertNumToChar error, ", err)
+			}
+			record.employeeId, err = f.GetCellValue(sheetName, colNameString+"1")
+			if record.employeeId == "x" {
+				continue
+			}
+			if err != nil {
+				fmt.Println("GetCellValue error, ", err, "|||||||", colNameString, 1)
+			}
+			record.workSpendTime, err = strconv.ParseFloat(col, 64)
+			if record.employeeId == "0005720" {
+				fmt.Println(colNameString)
+				record.PrintWithPrefix("xxxxxxxxxxxxx" + strconv.Itoa(index) + "_" + strconv.Itoa(colIndex))
+			}
+			if err != nil {
+				fmt.Println("strconv.ParseFloat error, ", err, "|||||||", col)
+			}
+			emWorkTimeMap[record.employeeId] = emWorkTimeMap[record.employeeId] + record.workSpendTime
+			childList := projectIdRecordList[record.projectId]
+			childList = append(childList, record)
+			projectIdRecordList[record.projectId] = childList
+		}
 	}
 	fmt.Println("getEmployeeRecord", len(emWorkTimeMap), len(projectIdRecordList))
 	return emWorkTimeMap, projectIdRecordList
