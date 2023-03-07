@@ -9,6 +9,7 @@ type Payment struct {
 	bonds      string
 	insurance  string
 	salary     string
+	department string
 }
 
 func (payment *Payment) GetDaily() float64 {
@@ -49,4 +50,8 @@ func (payment *Payment) GetSalary() float64 {
 		return 0
 	}
 	return res
+}
+
+func (payment *Payment) GetDepartment() string {
+	return payment.department
 }
