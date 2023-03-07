@@ -6,9 +6,10 @@ import (
 	"strconv"
 )
 
-const proId = "PM20211228161652"
+const proId = "PM20230206030000"
 const outputSheetName = "sheet1"
 const outputpath = "/Users/yuzekai/Desktop/baobei/worktime/res.xlsx"
+const outputpath2 = "/Users/yuzekai/Desktop/baobei/worktime/res2.xlsx"
 
 func main() {
 	cardRecordFile := "/Users/yuzekai/Desktop/baobei/worktime/card.xlsx"
@@ -23,13 +24,17 @@ func main() {
 	emPaymentMap := getEmployeePayment(paymentFile)
 
 	//projectData := calculateProjectPrice(emWorkTimeMap, projectIdRecordList, emPaymentMap)
-
+	//
 	//genExcelOutput(projectData)
 
 	projectDepartmentData := calculateProjectPriceByDepartment(emWorkTimeMap, projectIdRecordList, emPaymentMap)
-	for _, v := range projectDepartmentData {
-		v.Print()
-	}
+	//for _, p := range projectDepartmentData {
+	//	if p.pmId == "PM5930" {
+	//		p.Print()
+	//	}
+	//}
+	genExcelOutput2(projectDepartmentData)
+
 }
 
 func genExcelOutput(projects []*ProjectData) {
@@ -72,6 +77,52 @@ func genExcelOutput(projects []*ProjectData) {
 	f.SetActiveSheet(index)
 	// Save spreadsheet by the given path.
 	if err := f.SaveAs(outputpath); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func genExcelOutput2(projects []*ProjectDataForDepartment) {
+	f := excelize.NewFile()
+	defer func() {
+		if err := f.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+	index, err := f.NewSheet(outputSheetName)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	// 设置表头
+	f.SetCellValue(outputSheetName, "A1", "项目号")
+	f.SetCellValue(outputSheetName, "B1", "项目编号")
+	f.SetCellValue(outputSheetName, "C1", "项目名称")
+	f.SetCellValue(outputSheetName, "D1", "部门")
+	f.SetCellValue(outputSheetName, "E1", "日常")
+	f.SetCellValue(outputSheetName, "F1", "差旅")
+	f.SetCellValue(outputSheetName, "G1", "奖金")
+	f.SetCellValue(outputSheetName, "H1", "五险一金")
+	f.SetCellValue(outputSheetName, "I1", "工资")
+
+	// 表数据
+	for i := 0; i < len(projects); i++ {
+		value := projects[i]
+		if value == nil {
+			continue
+		}
+		f.SetCellValue(outputSheetName, "A"+strconv.Itoa(i+2), value.pmId)
+		f.SetCellValue(outputSheetName, "B"+strconv.Itoa(i+2), value.projectId)
+		f.SetCellValue(outputSheetName, "C"+strconv.Itoa(i+2), value.projectName)
+		f.SetCellValue(outputSheetName, "D"+strconv.Itoa(i+2), value.department)
+		f.SetCellValue(outputSheetName, "E"+strconv.Itoa(i+2), value.daily)
+		f.SetCellValue(outputSheetName, "F"+strconv.Itoa(i+2), value.travel)
+		f.SetCellValue(outputSheetName, "G"+strconv.Itoa(i+2), value.bonds)
+		f.SetCellValue(outputSheetName, "H"+strconv.Itoa(i+2), value.insurance)
+		f.SetCellValue(outputSheetName, "I"+strconv.Itoa(i+2), value.salary)
+	}
+	f.SetActiveSheet(index)
+	// Save spreadsheet by the given path.
+	if err := f.SaveAs(outputpath2); err != nil {
 		fmt.Println(err)
 	}
 }
@@ -148,9 +199,10 @@ func calculateProjectPriceByDepartment(emWorkTimeMap map[string]float64,
 
 	for projectId, recordList := range projectIdRecordList {
 		if projectId == proId {
-			for _, record := range recordList {
-				record.Print()
-			}
+			//fmt.Println("pppppppppppppppppppppp")
+			//for _, record := range recordList {
+			//	record.Print()
+			//}
 		}
 		//fmt.Println("calculateProjectPrice: projectId: ", projectId, "   ", len(recordList))
 		projectForDepartment := make(map[string]*ProjectDataForDepartment)
@@ -185,11 +237,11 @@ func calculateProjectPriceByDepartment(emWorkTimeMap map[string]float64,
 
 			pDataStore := projectForDepartment[pData.department]
 			if pDataStore != nil {
-				pDataStore.daily += pDataStore.daily + pData.daily
-				pDataStore.travel += pDataStore.travel + pData.travel
-				pDataStore.bonds += pDataStore.bonds + pData.bonds
-				pDataStore.insurance += pDataStore.insurance + pData.insurance
-				pDataStore.salary += pDataStore.salary + pData.salary
+				pDataStore.daily += pData.daily
+				pDataStore.travel += pData.travel
+				pDataStore.bonds += pData.bonds
+				pDataStore.insurance += pData.insurance
+				pDataStore.salary += pData.salary
 			} else {
 				projectForDepartment[pData.department] = pData
 			}
