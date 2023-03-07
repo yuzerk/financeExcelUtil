@@ -23,16 +23,15 @@ func main() {
 
 	emPaymentMap := getEmployeePayment(paymentFile)
 
-	//projectData := calculateProjectPrice(emWorkTimeMap, projectIdRecordList, emPaymentMap)
-	//
-	//genExcelOutput(projectData)
+	projectData := calculateProjectPrice(emWorkTimeMap, projectIdRecordList, emPaymentMap)
+	genExcelOutput(projectData)
 
 	projectDepartmentData := calculateProjectPriceByDepartment(emWorkTimeMap, projectIdRecordList, emPaymentMap)
-	//for _, p := range projectDepartmentData {
-	//	if p.pmId == "PM5930" {
-	//		p.Print()
-	//	}
-	//}
+	////for _, p := range projectDepartmentData {
+	////	if p.pmId == "PM5930" {
+	////		p.Print()
+	////	}
+	////}
 	genExcelOutput2(projectDepartmentData)
 
 }
@@ -334,7 +333,7 @@ func getEmployeeRecordForTwoDimension(filepath string) (map[string]float64, map[
 	// 项目号map recordList
 	projectIdRecordList := make(map[string][]*Record)
 	for index, row := range rows {
-		if index <= 1 {
+		if index <= 2 {
 			continue
 		}
 		for colIndex, col := range row {
@@ -353,9 +352,6 @@ func getEmployeeRecordForTwoDimension(filepath string) (map[string]float64, map[
 				fmt.Println("ConvertNumToChar error, ", err)
 			}
 			data, err := f.GetCellValue(sheetName, colNameString+"3")
-			if data == "#N/A" {
-				continue
-			}
 			if err != nil {
 				fmt.Println("GetCellValue error, ", err, "|||||||", colNameString, 1)
 			}
