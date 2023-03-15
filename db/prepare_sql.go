@@ -68,15 +68,16 @@ func InsertToPayment(payment []*dto.Payment, dateString string) {
 
 func SelectCardsByProjectId(projectId string, page int, pageSize int) []*dto.Record {
 	limit, offset := pageUtil(page, pageSize)
-	rows, err := Db.Query(SELECT_CARD_BY_PROJECT_ID, projectId, limit, offset)
+	rows, err := Db.Query(SELECT_CARD_BY_PROJECT_ID, projectId, offset, limit)
 	res := make([]*dto.Record, 0)
 	if err != nil {
 		return make([]*dto.Record, 0)
 	}
 	for rows.Next() {
 		record := new(dto.Record)
-		err = rows.Scan(record.EmployeeId, record.PmId, record.ProjectId, record.ProjectName, record.PunchMonth, record.WorkSpendTime)
+		err = rows.Scan(&record.EmployeeId, &record.PmId, &record.ProjectId, &record.ProjectName, &record.PunchMonth, &record.WorkSpendTime)
 		if err != nil {
+			fmt.Println("SelectCardsByProjectId err is ", err)
 			return make([]*dto.Record, 0)
 		}
 		res = append(res, record)
