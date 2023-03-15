@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/xuri/excelize/v2"
+	"my/dto"
 	"strconv"
 )
 
@@ -104,8 +105,8 @@ func genExcelOutput2(projects []*ProjectDataForDepartment) {
 /**
  */
 func calculateProjectPrice(emWorkTimeMap map[string]float64,
-	projectIdRecordList map[string][]*Record,
-	emPaymentMap map[string]*Payment) []*ProjectData {
+	projectIdRecordList map[string][]*dto.Record,
+	emPaymentMap map[string]*dto.Payment) []*ProjectData {
 
 	fmt.Println("len(projectIdRecordList) is ", len(projectIdRecordList))
 	projectData := make([]*ProjectData, 0)
@@ -126,12 +127,12 @@ func calculateProjectPrice(emWorkTimeMap map[string]float64,
 		for _, record := range recordList {
 
 			// 基本数据
-			pData.pmId = record.pmId
-			pData.projectId = record.projectId
-			pData.projectName = record.projectName
+			pData.pmId = record.PmId
+			pData.projectId = record.ProjectId
+			pData.projectName = record.ProjectName
 
-			emId := record.employeeId
-			workTime := record.workSpendTime
+			emId := record.EmployeeId
+			workTime := record.WorkSpendTime
 
 			totalWorkTime := emWorkTimeMap[emId]
 			// 每个员工在这个项目中的工时比例
@@ -165,8 +166,8 @@ func calculateProjectPrice(emWorkTimeMap map[string]float64,
 根据部门分摊
 */
 func calculateProjectPriceByDepartment(emWorkTimeMap map[string]float64,
-	projectIdRecordList map[string][]*Record,
-	emPaymentMap map[string]*Payment) []*ProjectDataForDepartment {
+	projectIdRecordList map[string][]*dto.Record,
+	emPaymentMap map[string]*dto.Payment) []*ProjectDataForDepartment {
 
 	fmt.Println("len(projectIdRecordList) is ", len(projectIdRecordList))
 	projectData := make([]*ProjectDataForDepartment, 0)
@@ -185,12 +186,12 @@ func calculateProjectPriceByDepartment(emWorkTimeMap map[string]float64,
 			pData := new(ProjectDataForDepartment)
 
 			// 基本数据
-			pData.pmId = record.pmId
-			pData.projectId = record.projectId
-			pData.projectName = record.projectName
+			pData.pmId = record.PmId
+			pData.projectId = record.ProjectId
+			pData.projectName = record.ProjectName
 
-			emId := record.employeeId
-			workTime := record.workSpendTime
+			emId := record.EmployeeId
+			workTime := record.WorkSpendTime
 
 			totalWorkTime := emWorkTimeMap[emId]
 			// 每个员工在这个项目中的工时比例
@@ -233,7 +234,7 @@ func calculateProjectPriceByDepartment(emWorkTimeMap map[string]float64,
 *
 for 一维打卡表
 */
-func getEmployeeRecord(filepath string) (map[string]float64, map[string][]*Record) {
+func getEmployeeRecord(filepath string) (map[string]float64, map[string][]*dto.Record) {
 	f, err := excelize.OpenFile(filepath)
 	if err != err {
 		fmt.Println(err)
@@ -252,32 +253,32 @@ func getEmployeeRecord(filepath string) (map[string]float64, map[string][]*Recor
 	// 工号map 总工时
 	emWorkTimeMap := make(map[string]float64)
 	// 项目号map recordList
-	projectIdRecordList := make(map[string][]*Record)
+	projectIdRecordList := make(map[string][]*dto.Record)
 	for index, row := range rows {
 		if index == 0 {
 			continue
 		}
-		record := new(Record)
+		record := new(dto.Record)
 		for index, col := range row {
 			switch index {
 			case 0:
-				record.pmId = col
+				record.PmId = col
 			case 1:
-				record.projectId = col
+				record.ProjectId = col
 			case 2:
-				record.projectName = col
+				record.ProjectName = col
 			case 5:
-				record.employee = col
+				record.Employee = col
 			case 6:
-				record.employeeId = col
+				record.EmployeeId = col
 			case 8:
-				record.workSpendTime, _ = strconv.ParseFloat(col, 64)
+				record.WorkSpendTime, _ = strconv.ParseFloat(col, 64)
 			}
-			emWorkTimeMap[record.employeeId] = emWorkTimeMap[record.employeeId] + record.workSpendTime
+			emWorkTimeMap[record.EmployeeId] = emWorkTimeMap[record.EmployeeId] + record.WorkSpendTime
 		}
-		childList := projectIdRecordList[record.projectId]
+		childList := projectIdRecordList[record.ProjectId]
 		childList = append(childList, record)
-		projectIdRecordList[record.projectId] = childList
+		projectIdRecordList[record.ProjectId] = childList
 	}
 	fmt.Println("getEmployeeRecord", len(emWorkTimeMap), len(projectIdRecordList))
 	return emWorkTimeMap, projectIdRecordList
@@ -287,7 +288,7 @@ func getEmployeeRecord(filepath string) (map[string]float64, map[string][]*Recor
 *
 for 二维打卡表
 */
-func getEmployeeRecordForTwoDimension(filepath string) (map[string]float64, map[string][]*Record) {
+func getEmployeeRecordForTwoDimension(filepath string) (map[string]float64, map[string][]*dto.Record) {
 	f, err := excelize.OpenFile(filepath)
 	if err != err {
 		fmt.Println(err)
@@ -306,7 +307,7 @@ func getEmployeeRecordForTwoDimension(filepath string) (map[string]float64, map[
 	// 工号map 总工时
 	emWorkTimeMap := make(map[string]float64)
 	// 项目号map recordList
-	projectIdRecordList := make(map[string][]*Record)
+	projectIdRecordList := make(map[string][]*dto.Record)
 	for index, row := range rows {
 		if index <= 2 {
 			continue
@@ -318,10 +319,10 @@ func getEmployeeRecordForTwoDimension(filepath string) (map[string]float64, map[
 			if colIndex <= 14 {
 				continue
 			}
-			record := new(Record)
-			record.pmId = row[0]
-			record.projectId = row[1]
-			record.projectName = row[2]
+			record := new(dto.Record)
+			record.PmId = row[0]
+			record.ProjectId = row[1]
+			record.ProjectName = row[2]
 			colNameString, err := ConvertNumToChar(colIndex + 1)
 			if err != nil {
 				fmt.Println("ConvertNumToChar error, ", err)
@@ -330,19 +331,19 @@ func getEmployeeRecordForTwoDimension(filepath string) (map[string]float64, map[
 			if err != nil {
 				fmt.Println("GetCellValue error, ", err, "|||||||", colNameString, 1)
 			}
-			record.employeeId = data
-			record.workSpendTime, err = strconv.ParseFloat(col, 64)
-			if record.employeeId == "0005720" {
+			record.EmployeeId = data
+			record.WorkSpendTime, err = strconv.ParseFloat(col, 64)
+			if record.EmployeeId == "0005720" {
 				fmt.Println(colNameString)
 				record.PrintWithPrefix("xxxxxxxxxxxxx" + strconv.Itoa(index) + "_" + strconv.Itoa(colIndex))
 			}
 			if err != nil {
 				fmt.Println("strconv.ParseFloat error, ", err, "|||||||", col)
 			}
-			emWorkTimeMap[record.employeeId] = emWorkTimeMap[record.employeeId] + record.workSpendTime
-			childList := projectIdRecordList[record.projectId]
+			emWorkTimeMap[record.EmployeeId] = emWorkTimeMap[record.EmployeeId] + record.WorkSpendTime
+			childList := projectIdRecordList[record.ProjectId]
 			childList = append(childList, record)
-			projectIdRecordList[record.projectId] = childList
+			projectIdRecordList[record.ProjectId] = childList
 		}
 	}
 	fmt.Println("getEmployeeRecordForTwoDimension", len(emWorkTimeMap), len(projectIdRecordList))
@@ -353,7 +354,7 @@ func getEmployeeRecordForTwoDimension(filepath string) (map[string]float64, map[
 *
 工资表处理
 */
-func getEmployeePayment(filepath string) map[string]*Payment {
+func getEmployeePayment(filepath string) map[string]*dto.Payment {
 	f, err := excelize.OpenFile(filepath)
 	if err != err {
 		fmt.Println(err)
@@ -368,21 +369,110 @@ func getEmployeePayment(filepath string) map[string]*Payment {
 	if err != nil {
 		fmt.Println(err)
 	}
-	eIdPaymentMap := make(map[string]*Payment)
+	eIdPaymentMap := make(map[string]*dto.Payment)
 	for index, row := range rows {
 		if index <= 1 {
 			continue
 		}
-		payment := new(Payment)
-		payment.employeeId = row[1]
-		payment.daily = row[48-1]
-		payment.travel = row[49-1]
-		payment.bonds = row[53-1]
-		payment.insurance = row[54-1]
-		payment.salary = row[55-1]
-		payment.department = row[17]
-		eIdPaymentMap[payment.employeeId] = payment
+		payment := new(dto.Payment)
+		payment.SetEmployId(row[1])
+		payment.SetDaily(row[48-1])
+		payment.SetTravel(row[49-1])
+		payment.SetBonds(row[53-1])
+		payment.SetInsurance(row[54-1])
+		payment.SetSalary(row[55-1])
+		payment.SetDepartment(row[17])
+		eIdPaymentMap[payment.GetEmployId()] = payment
 	}
 	//fmt.Println("getEmployeePayment", len(eIdPaymentMap))
 	return eIdPaymentMap
+}
+
+func GetEmployeeRecordForDb(filepath string) []*dto.Record {
+	f, err := excelize.OpenFile(filepath)
+	if err != err {
+		fmt.Println(err)
+	}
+	defer func() {
+		if err := f.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+	sheetName := f.GetSheetName(0)
+	rows, err := f.GetRows(sheetName)
+	if err != nil {
+		fmt.Println(err)
+	}
+	records := make([]*dto.Record, 0)
+	for index, row := range rows {
+		if index <= 2 {
+			continue
+		}
+		for colIndex, col := range row {
+			if len(col) == 0 {
+				continue
+			}
+			if colIndex <= 14 {
+				continue
+			}
+			record := new(dto.Record)
+			record.PmId = row[0]
+			record.ProjectId = row[1]
+			record.ProjectName = row[2]
+			colNameString, err := ConvertNumToChar(colIndex + 1)
+			if err != nil {
+				fmt.Println("ConvertNumToChar error, ", err)
+			}
+			data, err := f.GetCellValue(sheetName, colNameString+"3")
+			if err != nil {
+				fmt.Println("GetCellValue error, ", err, "|||||||", colNameString, 1)
+			}
+			record.EmployeeId = data
+			record.WorkSpendTime, err = strconv.ParseFloat(col, 64)
+			if record.EmployeeId == "0005720" {
+				fmt.Println(colNameString)
+				record.PrintWithPrefix("xxxxxxxxxxxxx" + strconv.Itoa(index) + "_" + strconv.Itoa(colIndex))
+			}
+			if err != nil {
+				fmt.Println("strconv.ParseFloat error, ", err, "|||||||", col)
+			}
+			records = append(records, record)
+		}
+	}
+	return records
+}
+
+func GetEmployeePaymentForDB(filepath string) []*dto.Payment {
+	f, err := excelize.OpenFile(filepath)
+	if err != err {
+		fmt.Println(err)
+	}
+	defer func() {
+		if err := f.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+	sheetName := f.GetSheetName(0)
+	rows, err := f.GetRows(sheetName)
+	if err != nil {
+		fmt.Println(err)
+	}
+	paymentList := make([]*dto.Payment, 0)
+	for index, row := range rows {
+		if index <= 1 {
+			continue
+		}
+		payment := new(dto.Payment)
+		payment.SetEmployId(row[1])
+		payment.SetDaily(row[48-1])
+		payment.SetTravel(row[49-1])
+		payment.SetBonds(row[53-1])
+		payment.SetInsurance(row[54-1])
+		payment.SetSalary(row[55-1])
+		payment.SetDepartment(row[17])
+		payment.SetName(row[2])
+		paymentList = append(paymentList, payment)
+	}
+	//fmt.Println("getEmployeePayment", len(eIdPaymentMap))
+	return paymentList
 }
