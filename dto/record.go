@@ -9,6 +9,7 @@ type Record struct {
 	Employee      string
 	EmployeeId    string
 	WorkSpendTime float64
+	PunchMonth    string
 }
 
 func (r *Record) Print() {

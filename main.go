@@ -10,7 +10,16 @@ const paymentFile = "/Users/yuzekai/Desktop/baobei/worktime/payment.xlsx"
 func main() {
 	//doExcel()
 	//doCardSave()
-	doCostSave()
+	//doCostSave()
+	doSelectCard("PM20210701102533")
+
+}
+
+func doSelectCard(projectId string) {
+	records := db.SelectCardsByProjectId(projectId, 1, 10)
+	for _, record := range records {
+		record.Print()
+	}
 }
 
 func doCardSave() {
