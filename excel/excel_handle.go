@@ -1,4 +1,4 @@
-package main
+package excel
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ const outputSheetName = "sheet1"
 const outputpath = "/Users/yuzekai/Desktop/baobei/worktime/res.xlsx"
 const outputpath2 = "/Users/yuzekai/Desktop/baobei/worktime/res2.xlsx"
 
-func genExcelOutput(projects []*ProjectData) {
+func genExcelOutput(projects []*dto.ProjectData) {
 	f := excelize.NewFile()
 	defer func() {
 		if err := f.Close(); err != nil {
@@ -56,7 +56,7 @@ func genExcelOutput(projects []*ProjectData) {
 	}
 }
 
-func genExcelOutput2(projects []*ProjectDataForDepartment) {
+func genExcelOutput2(projects []*dto.ProjectDataForDepartment) {
 	f := excelize.NewFile()
 	defer func() {
 		if err := f.Close(); err != nil {
@@ -106,13 +106,13 @@ func genExcelOutput2(projects []*ProjectDataForDepartment) {
  */
 func calculateProjectPrice(emWorkTimeMap map[string]float64,
 	projectIdRecordList map[string][]*dto.Record,
-	emPaymentMap map[string]*dto.Payment) []*ProjectData {
+	emPaymentMap map[string]*dto.Payment) []*dto.ProjectData {
 
 	fmt.Println("len(projectIdRecordList) is ", len(projectIdRecordList))
-	projectData := make([]*ProjectData, 0)
+	projectData := make([]*dto.ProjectData, 0)
 
 	for projectId, recordList := range projectIdRecordList {
-		pData := new(ProjectData)
+		pData := new(dto.ProjectData)
 		daily := 0.0
 		travel := 0.0
 		bonds := 0.0
@@ -167,10 +167,10 @@ func calculateProjectPrice(emWorkTimeMap map[string]float64,
 */
 func calculateProjectPriceByDepartment(emWorkTimeMap map[string]float64,
 	projectIdRecordList map[string][]*dto.Record,
-	emPaymentMap map[string]*dto.Payment) []*ProjectDataForDepartment {
+	emPaymentMap map[string]*dto.Payment) []*dto.ProjectDataForDepartment {
 
 	fmt.Println("len(projectIdRecordList) is ", len(projectIdRecordList))
-	projectData := make([]*ProjectDataForDepartment, 0)
+	projectData := make([]*dto.ProjectDataForDepartment, 0)
 
 	for projectId, recordList := range projectIdRecordList {
 		if projectId == proId {
@@ -180,10 +180,10 @@ func calculateProjectPriceByDepartment(emWorkTimeMap map[string]float64,
 			//}
 		}
 		//fmt.Println("calculateProjectPrice: projectId: ", projectId, "   ", len(recordList))
-		projectForDepartment := make(map[string]*ProjectDataForDepartment)
+		projectForDepartment := make(map[string]*dto.ProjectDataForDepartment)
 		for _, record := range recordList {
 
-			pData := new(ProjectDataForDepartment)
+			pData := new(dto.ProjectDataForDepartment)
 
 			// 基本数据
 			pData.pmId = record.PmId

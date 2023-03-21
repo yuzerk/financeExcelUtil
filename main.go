@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"my/db"
 	"my/dto"
+	"my/excel"
 	"net/http"
 )
 
@@ -56,12 +57,12 @@ func doSelectCard(projectId string) []*dto.Record {
 }
 
 func doCardSave() {
-	records := GetEmployeeRecordForDb(cardRecordFile)
+	records := excel.GetEmployeeRecordForDb(cardRecordFile)
 	db.InsertToCard(records, "2023-02-01")
 }
 
 func doCostSave() {
-	payments := GetEmployeePaymentForDB(paymentFile)
+	payments := excel.GetEmployeePaymentForDB(paymentFile)
 	db.InsertToPayment(payments, "2023-02-01")
 }
 
@@ -71,18 +72,18 @@ func doExcel() {
 	//emWorkTimeMap, projectIdRecordList := getEmployeeRecord(cardRecordFile)
 
 	// 二维表
-	emWorkTimeMap, projectIdRecordList := getEmployeeRecordForTwoDimension(cardRecordFile)
+	emWorkTimeMap, projectIdRecordList := excel.getEmployeeRecordForTwoDimension(cardRecordFile)
 
-	emPaymentMap := getEmployeePayment(paymentFile)
+	emPaymentMap := excel.getEmployeePayment(paymentFile)
 
-	projectData := calculateProjectPrice(emWorkTimeMap, projectIdRecordList, emPaymentMap)
-	genExcelOutput(projectData)
+	projectData := excel.calculateProjectPrice(emWorkTimeMap, projectIdRecordList, emPaymentMap)
+	excel.genExcelOutput(projectData)
 
-	projectDepartmentData := calculateProjectPriceByDepartment(emWorkTimeMap, projectIdRecordList, emPaymentMap)
+	projectDepartmentData := excel.calculateProjectPriceByDepartment(emWorkTimeMap, projectIdRecordList, emPaymentMap)
 	////for _, p := range projectDepartmentData {
 	////	if p.pmId == "PM5930" {
 	////		p.Print()
 	////	}
 	////}
-	genExcelOutput2(projectDepartmentData)
+	excel.genExcelOutput2(projectDepartmentData)
 }
