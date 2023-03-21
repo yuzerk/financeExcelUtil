@@ -40,14 +40,14 @@ func genExcelOutput(projects []*dto.ProjectData) {
 		if value == nil {
 			continue
 		}
-		f.SetCellValue(outputSheetName, "A"+strconv.Itoa(i+2), value.pmId)
-		f.SetCellValue(outputSheetName, "B"+strconv.Itoa(i+2), value.projectId)
-		f.SetCellValue(outputSheetName, "C"+strconv.Itoa(i+2), value.projectName)
-		f.SetCellValue(outputSheetName, "E"+strconv.Itoa(i+2), value.daily)
-		f.SetCellValue(outputSheetName, "F"+strconv.Itoa(i+2), value.travel)
-		f.SetCellValue(outputSheetName, "G"+strconv.Itoa(i+2), value.bonds)
-		f.SetCellValue(outputSheetName, "H"+strconv.Itoa(i+2), value.insurance)
-		f.SetCellValue(outputSheetName, "I"+strconv.Itoa(i+2), value.salary)
+		f.SetCellValue(outputSheetName, "A"+strconv.Itoa(i+2), value.PmId)
+		f.SetCellValue(outputSheetName, "B"+strconv.Itoa(i+2), value.ProjectId)
+		f.SetCellValue(outputSheetName, "C"+strconv.Itoa(i+2), value.ProjectName)
+		f.SetCellValue(outputSheetName, "E"+strconv.Itoa(i+2), value.Daily)
+		f.SetCellValue(outputSheetName, "F"+strconv.Itoa(i+2), value.Travel)
+		f.SetCellValue(outputSheetName, "G"+strconv.Itoa(i+2), value.Bonds)
+		f.SetCellValue(outputSheetName, "H"+strconv.Itoa(i+2), value.Insurance)
+		f.SetCellValue(outputSheetName, "I"+strconv.Itoa(i+2), value.Salary)
 	}
 	f.SetActiveSheet(index)
 	// Save spreadsheet by the given path.
@@ -85,15 +85,15 @@ func genExcelOutput2(projects []*dto.ProjectDataForDepartment) {
 		if value == nil {
 			continue
 		}
-		f.SetCellValue(outputSheetName, "A"+strconv.Itoa(i+2), value.pmId)
-		f.SetCellValue(outputSheetName, "B"+strconv.Itoa(i+2), value.projectId)
-		f.SetCellValue(outputSheetName, "C"+strconv.Itoa(i+2), value.projectName)
-		f.SetCellValue(outputSheetName, "D"+strconv.Itoa(i+2), value.department)
-		f.SetCellValue(outputSheetName, "E"+strconv.Itoa(i+2), value.daily)
-		f.SetCellValue(outputSheetName, "F"+strconv.Itoa(i+2), value.travel)
-		f.SetCellValue(outputSheetName, "G"+strconv.Itoa(i+2), value.bonds)
-		f.SetCellValue(outputSheetName, "H"+strconv.Itoa(i+2), value.insurance)
-		f.SetCellValue(outputSheetName, "I"+strconv.Itoa(i+2), value.salary)
+		f.SetCellValue(outputSheetName, "A"+strconv.Itoa(i+2), value.PmId)
+		f.SetCellValue(outputSheetName, "B"+strconv.Itoa(i+2), value.ProjectId)
+		f.SetCellValue(outputSheetName, "C"+strconv.Itoa(i+2), value.ProjectName)
+		f.SetCellValue(outputSheetName, "D"+strconv.Itoa(i+2), value.Department)
+		f.SetCellValue(outputSheetName, "E"+strconv.Itoa(i+2), value.Daily)
+		f.SetCellValue(outputSheetName, "F"+strconv.Itoa(i+2), value.Travel)
+		f.SetCellValue(outputSheetName, "G"+strconv.Itoa(i+2), value.Bonds)
+		f.SetCellValue(outputSheetName, "H"+strconv.Itoa(i+2), value.Insurance)
+		f.SetCellValue(outputSheetName, "I"+strconv.Itoa(i+2), value.Salary)
 	}
 	f.SetActiveSheet(index)
 	// Save spreadsheet by the given path.
@@ -127,9 +127,9 @@ func calculateProjectPrice(emWorkTimeMap map[string]float64,
 		for _, record := range recordList {
 
 			// 基本数据
-			pData.pmId = record.PmId
-			pData.projectId = record.ProjectId
-			pData.projectName = record.ProjectName
+			pData.PmId = record.PmId
+			pData.ProjectId = record.ProjectId
+			pData.ProjectName = record.ProjectName
 
 			emId := record.EmployeeId
 			workTime := record.WorkSpendTime
@@ -150,11 +150,11 @@ func calculateProjectPrice(emWorkTimeMap map[string]float64,
 			insurance += rate * emPaymentMap[emId].GetInsurance()
 			salary += rate * emPaymentMap[emId].GetSalary()
 		}
-		pData.daily = daily
-		pData.travel = travel
-		pData.bonds = bonds
-		pData.insurance = insurance
-		pData.salary = salary
+		pData.Daily = daily
+		pData.Travel = travel
+		pData.Bonds = bonds
+		pData.Insurance = insurance
+		pData.Salary = salary
 		fmt.Printf("%s 项目中 日常：%f，差旅： %f, 奖金：%f, 五险一金: %f, 工资: %f \n", projectId, daily, travel, bonds, insurance, salary)
 		projectData = append(projectData, pData)
 	}
@@ -186,9 +186,9 @@ func calculateProjectPriceByDepartment(emWorkTimeMap map[string]float64,
 			pData := new(dto.ProjectDataForDepartment)
 
 			// 基本数据
-			pData.pmId = record.PmId
-			pData.projectId = record.ProjectId
-			pData.projectName = record.ProjectName
+			pData.PmId = record.PmId
+			pData.ProjectId = record.ProjectId
+			pData.ProjectName = record.ProjectName
 
 			emId := record.EmployeeId
 			workTime := record.WorkSpendTime
@@ -203,27 +203,27 @@ func calculateProjectPriceByDepartment(emWorkTimeMap map[string]float64,
 			if emPaymentMap[emId] == nil {
 				continue
 			}
-			pData.department = emPaymentMap[emId].GetDepartment()
-			pData.daily = rate * emPaymentMap[emId].GetDaily()
-			pData.travel = rate * emPaymentMap[emId].GetTravel()
-			pData.bonds = rate * emPaymentMap[emId].GetBonds()
-			pData.insurance = rate * emPaymentMap[emId].GetInsurance()
-			pData.salary = rate * emPaymentMap[emId].GetSalary()
+			pData.Department = emPaymentMap[emId].GetDepartment()
+			pData.Daily = rate * emPaymentMap[emId].GetDaily()
+			pData.Travel = rate * emPaymentMap[emId].GetTravel()
+			pData.Bonds = rate * emPaymentMap[emId].GetBonds()
+			pData.Insurance = rate * emPaymentMap[emId].GetInsurance()
+			pData.Salary = rate * emPaymentMap[emId].GetSalary()
 
-			pDataStore := projectForDepartment[pData.department]
+			pDataStore := projectForDepartment[pData.Department]
 			if pDataStore != nil {
-				pDataStore.daily += pData.daily
-				pDataStore.travel += pData.travel
-				pDataStore.bonds += pData.bonds
-				pDataStore.insurance += pData.insurance
-				pDataStore.salary += pData.salary
+				pDataStore.Daily += pData.Daily
+				pDataStore.Travel += pData.Travel
+				pDataStore.Bonds += pData.Bonds
+				pDataStore.Insurance += pData.Insurance
+				pDataStore.Salary += pData.Salary
 			} else {
-				projectForDepartment[pData.department] = pData
+				projectForDepartment[pData.Department] = pData
 			}
 		}
 
 		for _, projectDetail := range projectForDepartment {
-			fmt.Printf("%s 项目中 日常：%f，差旅： %f, 奖金：%f, 五险一金: %f, 工资: %f , 部门: %s\n", projectDetail.projectId, projectDetail.daily, projectDetail.travel, projectDetail.bonds, projectDetail.insurance, projectDetail.salary, projectDetail.department)
+			fmt.Printf("%s 项目中 日常：%f，差旅： %f, 奖金：%f, 五险一金: %f, 工资: %f , 部门: %s\n", projectDetail.ProjectId, projectDetail.Daily, projectDetail.Travel, projectDetail.Bonds, projectDetail.Insurance, projectDetail.Salary, projectDetail.Department)
 			projectData = append(projectData, projectDetail)
 		}
 	}
