@@ -5,6 +5,7 @@ import (
 	"my/db"
 	"my/dto"
 	"my/excel"
+	"my/syn"
 	"net/http"
 )
 
@@ -16,14 +17,15 @@ func main() {
 	//doCardSave()
 	//doCostSave()
 	//doSelectCard("PM20210701102533")
-	router := gin.Default()
-	router.GET("/getCardsByProjectId", func(context *gin.Context) {
-		projectId := context.Query("projectId")
-		records := doSelectCard(projectId)
-		context.JSON(http.StatusOK, records)
-	})
-	router.Use(CrosHandler())
-	router.Run(":8088")
+	//router := gin.Default()
+	//router.GET("/getCardsByProjectId", func(context *gin.Context) {
+	//	projectId := context.Query("projectId")
+	//	records := doSelectCard(projectId)
+	//	context.JSON(http.StatusOK, records)
+	//})
+	//router.Use(CrosHandler())
+	//router.Run(":8088")
+	syn.Exe()
 }
 
 // 跨域访问：cross  origin resource share
@@ -72,18 +74,18 @@ func doExcel() {
 	//emWorkTimeMap, projectIdRecordList := getEmployeeRecord(cardRecordFile)
 
 	// 二维表
-	emWorkTimeMap, projectIdRecordList := excel.getEmployeeRecordForTwoDimension(cardRecordFile)
+	emWorkTimeMap, projectIdRecordList := excel.GetEmployeeRecordForTwoDimension(cardRecordFile)
 
-	emPaymentMap := excel.getEmployeePayment(paymentFile)
+	emPaymentMap := excel.GetEmployeePayment(paymentFile)
 
-	projectData := excel.calculateProjectPrice(emWorkTimeMap, projectIdRecordList, emPaymentMap)
-	excel.genExcelOutput(projectData)
+	projectData := excel.CalculateProjectPrice(emWorkTimeMap, projectIdRecordList, emPaymentMap)
+	excel.GenExcelOutput(projectData)
 
-	projectDepartmentData := excel.calculateProjectPriceByDepartment(emWorkTimeMap, projectIdRecordList, emPaymentMap)
+	projectDepartmentData := excel.CalculateProjectPriceByDepartment(emWorkTimeMap, projectIdRecordList, emPaymentMap)
 	////for _, p := range projectDepartmentData {
 	////	if p.pmId == "PM5930" {
 	////		p.Print()
 	////	}
 	////}
-	excel.genExcelOutput2(projectDepartmentData)
+	excel.GenExcelOutput2(projectDepartmentData)
 }

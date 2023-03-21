@@ -12,7 +12,7 @@ const outputSheetName = "sheet1"
 const outputpath = "/Users/yuzekai/Desktop/baobei/worktime/res.xlsx"
 const outputpath2 = "/Users/yuzekai/Desktop/baobei/worktime/res2.xlsx"
 
-func genExcelOutput(projects []*dto.ProjectData) {
+func GenExcelOutput(projects []*dto.ProjectData) {
 	f := excelize.NewFile()
 	defer func() {
 		if err := f.Close(); err != nil {
@@ -56,7 +56,7 @@ func genExcelOutput(projects []*dto.ProjectData) {
 	}
 }
 
-func genExcelOutput2(projects []*dto.ProjectDataForDepartment) {
+func GenExcelOutput2(projects []*dto.ProjectDataForDepartment) {
 	f := excelize.NewFile()
 	defer func() {
 		if err := f.Close(); err != nil {
@@ -104,7 +104,7 @@ func genExcelOutput2(projects []*dto.ProjectDataForDepartment) {
 
 /**
  */
-func calculateProjectPrice(emWorkTimeMap map[string]float64,
+func CalculateProjectPrice(emWorkTimeMap map[string]float64,
 	projectIdRecordList map[string][]*dto.Record,
 	emPaymentMap map[string]*dto.Payment) []*dto.ProjectData {
 
@@ -165,7 +165,7 @@ func calculateProjectPrice(emWorkTimeMap map[string]float64,
 *
 根据部门分摊
 */
-func calculateProjectPriceByDepartment(emWorkTimeMap map[string]float64,
+func CalculateProjectPriceByDepartment(emWorkTimeMap map[string]float64,
 	projectIdRecordList map[string][]*dto.Record,
 	emPaymentMap map[string]*dto.Payment) []*dto.ProjectDataForDepartment {
 
@@ -288,7 +288,7 @@ func getEmployeeRecord(filepath string) (map[string]float64, map[string][]*dto.R
 *
 for 二维打卡表
 */
-func getEmployeeRecordForTwoDimension(filepath string) (map[string]float64, map[string][]*dto.Record) {
+func GetEmployeeRecordForTwoDimension(filepath string) (map[string]float64, map[string][]*dto.Record) {
 	f, err := excelize.OpenFile(filepath)
 	if err != err {
 		fmt.Println(err)
@@ -354,7 +354,7 @@ func getEmployeeRecordForTwoDimension(filepath string) (map[string]float64, map[
 *
 工资表处理
 */
-func getEmployeePayment(filepath string) map[string]*dto.Payment {
+func GetEmployeePayment(filepath string) map[string]*dto.Payment {
 	f, err := excelize.OpenFile(filepath)
 	if err != err {
 		fmt.Println(err)
