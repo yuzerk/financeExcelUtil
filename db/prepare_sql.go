@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"fmt"
 	"my/dto"
 )
@@ -10,6 +11,8 @@ const INSERT_INTO_CARD = "insert into punch_card(`employ_id`, `pm_id`, `project_
 const INSERT_INTO_PAYMENT = "insert into employ_cost(`employ_id`, `employ_name`, `daily_fee`, `travel_fee`, `bonds_fee`, `insurance_fee`, `salary_fee`, `punch_month`, `department_for_finance`) value (?,?,?,?,?,?,?,?,?)"
 
 const SELECT_CARD_BY_PROJECT_ID = "select `employ_id`, `pm_id`, `project_id`, `project_name`, `punch_month`, `work_time` from punch_card where project_id=?  limit ?, ?"
+
+const Default_SELECT_CARD_BY_PROJECT_ID = "select `employ_id`, `pm_id`, `project_id`, `project_name`, `punch_month`, `work_time` from punch_card where 1=1  limit ?, ?"
 
 func InsertToCard(records []*dto.Record, dateString string) {
 	tx, err := Db.Begin()
@@ -68,7 +71,13 @@ func InsertToPayment(payment []*dto.Payment, dateString string) {
 
 func SelectCardsByProjectId(projectId string, page int, pageSize int) []*dto.Record {
 	limit, offset := pageUtil(page, pageSize)
-	rows, err := Db.Query(SELECT_CARD_BY_PROJECT_ID, projectId, offset, limit)
+	var rows *sql.Rows
+	var err error
+	if projectId == "" {
+		rows, err = Db.Query(Default_SELECT_CARD_BY_PROJECT_ID, offset, limit)
+	} else {
+		rows, err = Db.Query(SELECT_CARD_BY_PROJECT_ID, projectId, offset, limit)
+	}
 	res := make([]*dto.Record, 0)
 	if err != nil {
 		return make([]*dto.Record, 0)
