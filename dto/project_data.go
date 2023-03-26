@@ -3,26 +3,30 @@ package dto
 import "fmt"
 
 type ProjectData struct {
-	PmId        string
-	ProjectId   string
-	ProjectName string
-	Daily       float64 // 日常
-	Travel      float64 // 差旅
-	Bonds       float64 // 奖金
-	Insurance   float64 // 保险
-	Salary      float64 // 工资
+	PmId         string
+	ProjectId    string
+	ProjectName  string
+	Daily        float64 // 日常
+	Travel       float64 // 差旅
+	Bonds        float64 // 奖金
+	Insurance    float64 // 保险
+	Salary       float64 // 工资
+	Rent         float64 // 房租
+	Depreciation float64 // 折旧
 }
 
 type ProjectDataForDepartment struct {
-	PmId        string
-	ProjectId   string
-	ProjectName string
-	Daily       float64 // 日常
-	Travel      float64 // 差旅
-	Bonds       float64 // 奖金
-	Insurance   float64 // 保险
-	Salary      float64 // 工资
-	Department  string  // 部门
+	PmId         string
+	ProjectId    string
+	ProjectName  string
+	Daily        float64 // 日常
+	Travel       float64 // 差旅
+	Bonds        float64 // 奖金
+	Insurance    float64 // 保险
+	Salary       float64 // 工资
+	Department   string  // 部门
+	Rent         float64 // 房租
+	Depreciation float64 // 折旧
 }
 
 func (p *ProjectDataForDepartment) Print() {

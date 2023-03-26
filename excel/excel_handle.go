@@ -9,8 +9,12 @@ import (
 
 const proId = "PM20230206030000"
 const outputSheetName = "sheet1"
-const outputpath = "/Users/yuzekai/Desktop/baobei/worktime/res.xlsx"
-const outputpath2 = "/Users/yuzekai/Desktop/baobei/worktime/res2.xlsx"
+
+//const outputpath = "/Users/yuzekai/Desktop/baobei/worktime/res.xlsx"
+//const outputpath2 = "/Users/yuzekai/Desktop/baobei/worktime/res2.xlsx"
+
+const outputpath = "res.xlsx"
+const outputpath2 = "res2.xlsx"
 
 func GenExcelOutput(projects []*dto.ProjectData) {
 	f := excelize.NewFile()
@@ -33,6 +37,8 @@ func GenExcelOutput(projects []*dto.ProjectData) {
 	f.SetCellValue(outputSheetName, "G1", "奖金")
 	f.SetCellValue(outputSheetName, "H1", "五险一金")
 	f.SetCellValue(outputSheetName, "I1", "工资")
+	f.SetCellValue(outputSheetName, "J1", "房租")
+	f.SetCellValue(outputSheetName, "K1", "折旧")
 
 	// 表数据
 	for i := 0; i < len(projects); i++ {
@@ -48,6 +54,8 @@ func GenExcelOutput(projects []*dto.ProjectData) {
 		f.SetCellValue(outputSheetName, "G"+strconv.Itoa(i+2), value.Bonds)
 		f.SetCellValue(outputSheetName, "H"+strconv.Itoa(i+2), value.Insurance)
 		f.SetCellValue(outputSheetName, "I"+strconv.Itoa(i+2), value.Salary)
+		f.SetCellValue(outputSheetName, "J"+strconv.Itoa(i+2), value.Rent)
+		f.SetCellValue(outputSheetName, "K"+strconv.Itoa(i+2), value.Depreciation)
 	}
 	f.SetActiveSheet(index)
 	// Save spreadsheet by the given path.
@@ -78,6 +86,8 @@ func GenExcelOutput2(projects []*dto.ProjectDataForDepartment) {
 	f.SetCellValue(outputSheetName, "G1", "奖金")
 	f.SetCellValue(outputSheetName, "H1", "五险一金")
 	f.SetCellValue(outputSheetName, "I1", "工资")
+	f.SetCellValue(outputSheetName, "J1", "房租")
+	f.SetCellValue(outputSheetName, "K1", "折旧")
 
 	// 表数据
 	for i := 0; i < len(projects); i++ {
@@ -94,6 +104,8 @@ func GenExcelOutput2(projects []*dto.ProjectDataForDepartment) {
 		f.SetCellValue(outputSheetName, "G"+strconv.Itoa(i+2), value.Bonds)
 		f.SetCellValue(outputSheetName, "H"+strconv.Itoa(i+2), value.Insurance)
 		f.SetCellValue(outputSheetName, "I"+strconv.Itoa(i+2), value.Salary)
+		f.SetCellValue(outputSheetName, "J"+strconv.Itoa(i+2), value.Rent)
+		f.SetCellValue(outputSheetName, "K"+strconv.Itoa(i+2), value.Depreciation)
 	}
 	f.SetActiveSheet(index)
 	// Save spreadsheet by the given path.
@@ -118,6 +130,8 @@ func CalculateProjectPrice(emWorkTimeMap map[string]float64,
 		bonds := 0.0
 		insurance := 0.0
 		salary := 0.0
+		rent := 0.0
+		depreciation := 0.0
 		if projectId == proId {
 			for _, record := range recordList {
 				record.Print()
@@ -149,12 +163,16 @@ func CalculateProjectPrice(emWorkTimeMap map[string]float64,
 			bonds += rate * emPaymentMap[emId].GetBonds()
 			insurance += rate * emPaymentMap[emId].GetInsurance()
 			salary += rate * emPaymentMap[emId].GetSalary()
+			rent += rate * emPaymentMap[emId].GetRent()
+			depreciation += rate * emPaymentMap[emId].GetDepreciation()
 		}
 		pData.Daily = daily
 		pData.Travel = travel
 		pData.Bonds = bonds
 		pData.Insurance = insurance
 		pData.Salary = salary
+		pData.Rent = rent
+		pData.Depreciation = depreciation
 		fmt.Printf("%s 项目中 日常：%f，差旅： %f, 奖金：%f, 五险一金: %f, 工资: %f \n", projectId, daily, travel, bonds, insurance, salary)
 		projectData = append(projectData, pData)
 	}
@@ -209,6 +227,8 @@ func CalculateProjectPriceByDepartment(emWorkTimeMap map[string]float64,
 			pData.Bonds = rate * emPaymentMap[emId].GetBonds()
 			pData.Insurance = rate * emPaymentMap[emId].GetInsurance()
 			pData.Salary = rate * emPaymentMap[emId].GetSalary()
+			pData.Rent = rate * emPaymentMap[emId].GetRent()
+			pData.Depreciation = rate * emPaymentMap[emId].GetDepreciation()
 
 			pDataStore := projectForDepartment[pData.Department]
 			if pDataStore != nil {
@@ -217,6 +237,8 @@ func CalculateProjectPriceByDepartment(emWorkTimeMap map[string]float64,
 				pDataStore.Bonds += pData.Bonds
 				pDataStore.Insurance += pData.Insurance
 				pDataStore.Salary += pData.Salary
+				pDataStore.Rent += pData.Rent
+				pDataStore.Depreciation += pData.Depreciation
 			} else {
 				projectForDepartment[pData.Department] = pData
 			}
@@ -376,12 +398,21 @@ func GetEmployeePayment(filepath string) map[string]*dto.Payment {
 		}
 		payment := new(dto.Payment)
 		payment.SetEmployId(row[1])
-		payment.SetDaily(row[48-1])
-		payment.SetTravel(row[49-1])
-		payment.SetBonds(row[53-1])
-		payment.SetInsurance(row[54-1])
-		payment.SetSalary(row[55-1])
+		//payment.SetDaily(row[48-1])
+		//payment.SetTravel(row[49-1])
+		//payment.SetBonds(row[53-1])
+		//payment.SetInsurance(row[54-1])
+		//payment.SetSalary(row[55-1])
+		//payment.SetDepartment(row[17])
+
+		payment.SetDaily(row[22-1])
+		payment.SetTravel(row[23-1])
+		payment.SetBonds(row[21-1])
+		payment.SetInsurance(row[20-1])
+		payment.SetSalary(row[19-1])
 		payment.SetDepartment(row[17])
+		payment.SetRent(row[24-1])
+		payment.SetDepreciation(row[25-1])
 		eIdPaymentMap[payment.GetEmployId()] = payment
 	}
 	//fmt.Println("getEmployeePayment", len(eIdPaymentMap))

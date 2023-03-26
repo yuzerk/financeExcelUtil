@@ -3,14 +3,16 @@ package dto
 import "strconv"
 
 type Payment struct {
-	employeeId string
-	daily      string
-	travel     string
-	bonds      string
-	insurance  string
-	salary     string
-	department string
-	name       string
+	employeeId   string
+	daily        string
+	travel       string
+	bonds        string
+	insurance    string
+	salary       string
+	department   string
+	name         string
+	rent         string
+	depreciation string
 }
 
 func (payment *Payment) GetName() string {
@@ -65,6 +67,22 @@ func (payment *Payment) GetDepartment() string {
 	return payment.department
 }
 
+func (payment *Payment) GetRent() float64 {
+	res, err := strconv.ParseFloat(payment.rent, 64)
+	if err != nil {
+		return 0
+	}
+	return res
+}
+
+func (payment *Payment) GetDepreciation() float64 {
+	res, err := strconv.ParseFloat(payment.depreciation, 64)
+	if err != nil {
+		return 0
+	}
+	return res
+}
+
 // set
 func (payment *Payment) SetName(_name string) {
 	payment.name = _name
@@ -96,4 +114,12 @@ func (payment *Payment) SetSalary(_salary string) {
 
 func (payment *Payment) SetDepartment(_department string) {
 	payment.department = _department
+}
+
+func (payment *Payment) SetRent(_rent string) {
+	payment.rent = _rent
+}
+
+func (payment *Payment) SetDepreciation(_depreciation string) {
+	payment.depreciation = _depreciation
 }

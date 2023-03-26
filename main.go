@@ -5,15 +5,18 @@ import (
 	"my/db"
 	"my/dto"
 	"my/excel"
-	"my/syn"
+	_ "my/syn"
 	"net/http"
 )
 
-const cardRecordFile = "/Users/yuzekai/Desktop/baobei/worktime/card.xlsx"
-const paymentFile = "/Users/yuzekai/Desktop/baobei/worktime/payment.xlsx"
+//const cardRecordFile = "/Users/yuzekai/Desktop/baobei/worktime/card.xlsx"
+//const paymentFile = "/Users/yuzekai/Desktop/baobei/worktime/payment.xlsx"
+
+const cardRecordFile = "card.xlsx"
+const paymentFile = "payment.xlsx"
 
 func main() {
-	//doExcel()
+	doExcel()
 	//doCardSave()
 	//doCostSave()
 	//doSelectCard("PM20210701102533")
@@ -23,9 +26,9 @@ func main() {
 	//	records := doSelectCard(projectId)
 	//	context.JSON(http.StatusOK, records)
 	//})
-	//router.Use(CrosHandler())
-	//router.Run(":8088")
-	syn.Exe()
+	////router.Use(CrosHandler())
+	////router.Run(":8088")
+	//syn.Exe()
 }
 
 // 跨域访问：cross  origin resource share
