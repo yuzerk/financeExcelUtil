@@ -10,11 +10,11 @@ import (
 const proId = "PM20230206030000"
 const outputSheetName = "sheet1"
 
-//const outputpath = "/Users/yuzekai/Desktop/baobei/worktime/res.xlsx"
-//const outputpath2 = "/Users/yuzekai/Desktop/baobei/worktime/res2.xlsx"
+const outputpath = "/Users/yuzekai/Desktop/baobei/worktime/res.xlsx"
+const outputpath2 = "/Users/yuzekai/Desktop/baobei/worktime/res2.xlsx"
 
-const outputpath = "res.xlsx"
-const outputpath2 = "res2.xlsx"
+//const outputpath = "res.xlsx"
+//const outputpath2 = "res2.xlsx"
 
 func GenExcelOutput(projects []*dto.ProjectData) {
 	f := excelize.NewFile()

@@ -9,11 +9,11 @@ import (
 	"net/http"
 )
 
-//const cardRecordFile = "/Users/yuzekai/Desktop/baobei/worktime/card.xlsx"
-//const paymentFile = "/Users/yuzekai/Desktop/baobei/worktime/payment.xlsx"
+const cardRecordFile = "/Users/yuzekai/Desktop/baobei/worktime/card.xlsx"
+const paymentFile = "/Users/yuzekai/Desktop/baobei/worktime/payment.xlsx"
 
-const cardRecordFile = "card.xlsx"
-const paymentFile = "payment.xlsx"
+//const cardRecordFile = "card.xlsx"
+//const paymentFile = "payment.xlsx"
 
 func main() {
 	doExcel()
